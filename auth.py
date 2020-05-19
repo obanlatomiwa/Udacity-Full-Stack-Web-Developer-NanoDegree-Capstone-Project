@@ -9,6 +9,7 @@ AUTH0_DOMAIN = 'tomiwaobanla.auth0.com'
 ALGORITHMS = ['RS256']
 API_AUDIENCE = 'notebook'
 
+
 # AuthError Exception
 class AuthError(Exception):
     def __init__(self, error, status_code):
@@ -112,3 +113,4 @@ def requires_auth(permission=''):
 
         return wrapper
     return requires_auth_decorator
+    

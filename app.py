@@ -1,27 +1,44 @@
 import os
-from flask import Flask, request, abort, jsonify
+from flask import Flask, request, abort, jsonify, redirect
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+from flask_migrate import Migrate
 
-from models import setup_db, db_path, Category, Note
+
+from models import setup_db, database_path, Category, Note
 from auth import AuthError, requires_auth
 
 
-def create_app(test_config=None, database_path=db_path):
+def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__)
-    app.config["SQLAlCHEMY_DATABASE_URI"] = database_path
-    setup_db(app, database_path)
+    # app.config["SQLAlCHEMY_DATABASE_URI"] = database_path
+    # setup_db(app, database_path)
+    setup_db(app)
     CORS(app)
+    migrate = Migrate(app,setup_db)
+
+    @app.after_request
+    def after_request(response):
+        response.headers.add(
+            'Access-Control-Allow-Headers', 'Content-Type,Authorization,true')
+        response.headers.add(
+            'Access-Control-Allow-Methods', 'GET,POST,DELETE,OPTIONS,PATCH')
+        return response
 
     # ROUTES
+    @app.route('/')
+    def welcome():
+        message = 'Welcome to the NOTEBOOK API'
+        return jsonify(message)
+        
     # GET /categories
     @app.route('/categories')
     @requires_auth(permission='get:categories')
     def get_categories(permission):
         categories = Category.query.all()
-        return jsonify({'success': True}), 200
-
+        return jsonify({'success': True,
+        'categories': categories}), 200
     # GET /notes
     @app.route('/notes')
     @requires_auth(permission='get:notes')
@@ -35,10 +52,12 @@ def create_app(test_config=None, database_path=db_path):
     def post_notes(permission):
         title = request.json.get('title')
         description = request.json.get('description')
+        category_id = request.json.get('category_id')
         if not title or not description:
             abort(400)
         description_string = str(description).replace("\'", "\"")
-        new_note = Note(title=title, description=description_string)
+        new_note = Note(title=title,
+        description=description_string, category_id=category_id)
         new_note.insert()
         return jsonify({'success': True}), 200
 
@@ -93,7 +112,7 @@ def create_app(test_config=None, database_path=db_path):
     @app.route('/notes/<int:note_id>', methods=['DELETE'])
     @requires_auth(permission='delete:notes')
     def delete_notes(permission):
-        note = Note.query.filter(Note.id == note_id).one_or_none()
+        note = Note.query.filter(Note.id==note_id).one_or_none()
         if not note:
             abort(404)
         note.delete()
@@ -106,7 +125,7 @@ def create_app(test_config=None, database_path=db_path):
     @requires_auth(permission='delete:categories')
     def delete_categories(permission):
         category = Category.query.filter(
-            Category.id == category_id).one_or_none()
+            Category.id==category_id).one_or_none()
         if not category:
             abort(404)
         category.delete()
@@ -161,7 +180,7 @@ def create_app(test_config=None, database_path=db_path):
 
     return app
 
-APP = create_app()
+app = create_app()
 
 if __name__ == '__main__':
-    APP.run(debug=True)
+    app.run(debug=True)
