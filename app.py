@@ -16,7 +16,7 @@ def create_app(test_config=None):
     # setup_db(app, database_path)
     setup_db(app)
     CORS(app)
-    migrate = Migrate(app,setup_db)
+    # migrate = Migrate(app,setup_db)
 
     @app.after_request
     def after_request(response):

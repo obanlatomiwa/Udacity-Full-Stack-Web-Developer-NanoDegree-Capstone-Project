@@ -43,14 +43,30 @@ The API may return these error types when requests fail:
 - 500: Internal Server Error
 
 ### Endpoints
-GET           '/notes'
-GET           '/categories'
-POST          '/notes'
-POST          '/categories'
-PATCH         '/notes/<int:note_id>'
-PATCH         '/categories/<int:category_id>'
-DELETE        '/notes/int:<note_id>'
-DELETE        '/categories/int:<category_id>'
+GET  '/notes'
+    This endpoint fetches all the notes in the database and displays them as json.
+
+GET  '/categories'
+    This endpoint fetches all the categories in the database and displays them as json.
+
+POST '/notes'
+    This endpoint will create a new note in the database based on the json that is in the body of the request.
+
+POST '/categories'
+    This endpoint will create a new category in the database based on the json that is in the body of the request.
+
+PATCH  '/notes/<int:note_id>'
+    This endpoint will modify the note that corresponds to the note ID that is passed into the url based on the json that is passed into the body of the request.
+
+PATCH  '/categories/<int:category_id>'
+    This endpoint will modify the category that corresponds to the category ID that is passed into the url based on the json that is passed into the body of the request.
+
+DELETE  '/notes/int:<note_id>'
+    This endpoint will delete the note that corresponds to the note ID that is passed into the url.
+
+DELETE  '/categories/int:<category_id>'
+    This endpoint will delete the category that corresponds to the category ID that is passed into the url.
+
 
 ## Getting started with local development
 
