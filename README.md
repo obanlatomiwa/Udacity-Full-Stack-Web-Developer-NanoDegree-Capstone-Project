@@ -25,7 +25,13 @@ PostgreSQL
 ## API Reference
 
 ### Base URL
-< TODO: base URL here>
+This app is currently hosted at https://wayne-notebook.herokuapp.com/ 
+
+### FOR AUTHORIZATION
+To login or set up an account, go to the following url: 
+
+https://tomiwaobanla.auth0.com/authorize?audience=notebook&response_type=token&client_id=dadGT1E45otj6iXpY97feCfOG6GAU6Oc&redirect_uri=https://wayne-notebook.herokuapp.com
+
 ### Error Handling
 Errors are returned as JSON objects with "success" set to False, "error" set to the error's number and a "message" describing the error
 
@@ -37,7 +43,14 @@ The API may return these error types when requests fail:
 - 500: Internal Server Error
 
 ### Endpoints
-< TODO: endpoints here>
+GET           '/notes'
+GET           '/categories'
+POST          '/notes'
+POST          '/categories'
+PATCH         '/notes/<int:note_id>'
+PATCH         '/categories/<int:category_id>'
+DELETE        '/notes/int:<note_id>'
+DELETE        '/categories/int:<category_id>'
 
 ## Getting started with local development
 
