@@ -3,27 +3,27 @@ from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 
-from models import setup_db, Category, Note
+from models import setup_db, db_path, Category, Note
 from auth import AuthError, requires_auth
 
 
 def create_app(test_config=None, database_path=db_path):
     # create and configure the app
     app = Flask(__name__)
-    app.config["SQLAlCHEMY_DATABASE_URI"] = db_path
-    set_up(app, db_path)
+    app.config["SQLAlCHEMY_DATABASE_URI"] = database_path
+    setup_db(app, database_path)
     CORS(app)
 
-    # Routes
+    # ROUTES
     # GET /categories
-    @app.routes('/categories')
+    @app.route('/categories')
     @requires_auth(permission='get:categories')
     def get_categories(permission):
         categories = Category.query.all()
-        return jsonify(['success': True]), 200
+        return jsonify({'success': True}), 200
 
     # GET /notes
-    @app.routes('/notes')
+    @app.route('/notes')
     @requires_auth(permission='get:notes')
     def get_notes(permission):
         notes = Note.query.all()
@@ -37,7 +37,7 @@ def create_app(test_config=None, database_path=db_path):
         description = request.json.get('description')
         if not title or not description:
             abort(400)
-        description_string = str(recipe).replace("\'", "\"")
+        description_string = str(description).replace("\'", "\"")
         new_note = Note(title=title, description=description_string)
         new_note.insert()
         return jsonify({'success': True}), 200
@@ -49,7 +49,7 @@ def create_app(test_config=None, database_path=db_path):
         description = request.json.get('description')
         if not description:
             abort(400)
-        description_string = str(recipe).replace("\'", "\"")
+        description_string = str(description).replace("\'", "\"")
         new_category = Category(description=description_string)
         new_category.insert()
         return jsonify({'success': True}), 200
@@ -79,7 +79,7 @@ def create_app(test_config=None, database_path=db_path):
     def patch_categories(permission, category_id):
         category = Category.query.filter(
             Category.id == category_id).one_or_none()
-        if not in category:
+        if not category:
             abort(404)
         description = request.json.get('description')
         if description:
@@ -88,18 +88,18 @@ def create_app(test_config=None, database_path=db_path):
         description.update()
         return jsonify({'success': True, 'modify': note_id}), 200
 
-    
     # DELETE /notes/<id>
     # if id not found return 404 error
     @app.route('/notes/<int:note_id>', methods=['DELETE'])
     @requires_auth(permission='delete:notes')
     def delete_notes(permission):
         note = Note.query.filter(Note.id == note_id).one_or_none()
-        if not in note:
+        if not note:
             abort(404)
         note.delete()
         return jsonify({'success': True, 'delete': note_id}), 200
-    
+
+
     # DELETE /categories/<id>
     # if id not found return 404 error
     @app.route('/categories/<int:category_id>', methods=['DELETE'])
@@ -122,8 +122,8 @@ def create_app(test_config=None, database_path=db_path):
             search_count = options.count()
             current_search = [option.format() for option in options]
         return jsonify({
-            'success': True, 'search': 'current_search',
-            'result': 'search_count'}), 200
+            'success': True, 'search': current_search,
+            'result': search_count}), 200
 
 
     # ERROR HANDLING
@@ -156,12 +156,12 @@ def create_app(test_config=None, database_path=db_path):
     def authorization_error(error):
         return jsonify({
             'success': False,
-            'error': error.status_code, 
+            'error': error.status_code,
             'message': 'YOU ARE NOT AUTHORIZED TO ACCESS THIS PAGE'}), error.status_code
 
     return app
 
-APP=create_app()
+APP = create_app()
 
 if __name__ == '__main__':
     APP.run(debug=True)

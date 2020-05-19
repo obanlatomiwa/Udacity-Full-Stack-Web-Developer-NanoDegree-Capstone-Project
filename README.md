@@ -2,7 +2,7 @@
 Notebook is a flask app designed to keep track of notes and categorize notes for record purposes. This project is also the Capstone Project for Full-Stack Nanodegree at Udacity.
 
 ## Database structure
-< TODO: quickDBD pic here>
+PostgreSQL
 
 ## Role Based Access Control
 
@@ -55,7 +55,7 @@ pip install -r requirements.txt
 
 ### Database Setup
 
-<TODO: text here>
+If you want to run the app locally, you will have to comment out line 5 and uncomment line 9 in models.py, providing path to your local database.
 
 ### Running the server
 
@@ -66,7 +66,37 @@ export FLASK_ENV=development
 flask run
 ```
 
+### Running the tests
+To run the tests you will also need to change TEST_DB_PATH (line 9 and 10) in test_app.py to match the path to your database. Note that running the tests will affect your database.
+To run the tests, execute this line from the project directory:
+```bash
+python test_app.py
+```
+
 ### Hosting instructions
 
-<TODO: text here>
+The app is prepared to be deployed to Heroku.
+You need to have a Heroku account and Heroku CLI installed on your machine.
+
+Log in to your Heroku account
+```bash
+heroku login
+```
+Create Heroku app
+```
+heroku create app_name
+```
+The output will include a git url. Copy it and add git remote for Heroku to your local repository
+```
+git remote add heroku heroku_git_url
+```
+Add postgresql add-on 
+```
+heroku addons:create heroku-postgresql:hobby-dev --app app_name
+```
+Push the app to Heroku
+```
+git push heroku master
+```
+
 

@@ -1,16 +1,18 @@
 import os
 from flask_sqlalchemy import SQLAlchemy
 
+# database for local development
 db_name = 'capstone'
 db_path = 'postgres://postgres:123456@{}/{}'.format('localhost:5432', db_name)
 
+# database for production
 # db_path = os.environ['DATABASE_URL']
 
 db = SQLAlchemy()
 
 # setting up SQLALchemy
-def setup_db(app, db_path):
-    app.config["SQLALCHEMY_DATABASE_URI"] = db_path
+def setup_db(app, database_path=db_path):
+    app.config["SQLALCHEMY_DATABASE_URI"] = database_path
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     db.app = app
     db.init_app(app)
@@ -53,7 +55,7 @@ class Note(db.Model):
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
 
 
-    def __init__(self, titile, description, category):
+    def __init__(self, title, description, category):
         self.title = title
         self.description = description
         self.category_id = category

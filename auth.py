@@ -112,4 +112,3 @@ def requires_auth(permission=''):
 
         return wrapper
     return requires_auth_decorator
-    
